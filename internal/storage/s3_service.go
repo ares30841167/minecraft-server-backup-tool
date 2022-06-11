@@ -106,7 +106,7 @@ func (m *S3Service) PutFile(fileName string) error {
 		Bucket:       &m.bucket,
 		Key:          &fileName,
 		Body:         file,
-		StorageClass: types.StorageClassStandard,
+		StorageClass: types.StorageClassStandardIa,
 	}
 
 	_, err = m.client.PutObject(context.TODO(), input)
