@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 	"os"
-	"regexp"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -12,7 +11,6 @@ import (
 type BackupWatcher struct {
 	fswatcher  *fsnotify.Watcher
 	bakmanager FileManager
-	regexp     *regexp.Regexp
 }
 
 func NewBackupWatcher() (*BackupWatcher, error) {
@@ -35,15 +33,9 @@ func NewBackupWatcher() (*BackupWatcher, error) {
 		return nil, err
 	}
 
-	r, err := regexp.Compile("^[0-9]+-[0-9]+-[0-9]+-[0-9]+-[0-9]+-[0-9]+\\.zip$")
-	if err != nil {
-		return nil, err
-	}
-
 	return &BackupWatcher{
 		fswatcher:  watcher,
 		bakmanager: manager,
-		regexp:     r,
 	}, nil
 }
 
@@ -60,10 +52,6 @@ func (bw *BackupWatcher) fsEventListener() {
 			}
 
 			if event.Op != fsnotify.Create {
-				continue
-			}
-
-			if !bw.regexp.MatchString(event.Name) {
 				continue
 			}
 

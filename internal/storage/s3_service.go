@@ -22,23 +22,23 @@ type S3Service struct {
 
 func NewS3Service() (*S3Service, error) {
 	if os.Getenv("WATCH_PATH") == "" {
-		return nil, errors.New("S3Manager: 未設定環境變數WATCH_PATH")
+		return nil, errors.New("S3Service: 未設定環境變數WATCH_PATH")
 	}
 
 	if os.Getenv("AWS_REGION") == "" {
-		return nil, errors.New("S3Manager: 未設定環境變數AWS_REGION")
+		return nil, errors.New("S3Service: 未設定環境變數AWS_REGION")
 	}
 
 	if os.Getenv("AWS_ACCESS_KEY_ID") == "" {
-		return nil, errors.New("S3Manager: 未設定環境變數AWS_ACCESS_KEY_ID")
+		return nil, errors.New("S3Service: 未設定環境變數AWS_ACCESS_KEY_ID")
 	}
 
 	if os.Getenv("AWS_SECRET_ACCESS_KEY") == "" {
-		return nil, errors.New("S3Manager: 未設定環境變數AWS_SECRET_ACCESS_KEY")
+		return nil, errors.New("S3Service: 未設定環境變數AWS_SECRET_ACCESS_KEY")
 	}
 
 	if os.Getenv("S3_BUCKET_NAME") == "" {
-		return nil, errors.New("S3Manager: 未設定環境變數S3_BUCKET_NAME")
+		return nil, errors.New("S3Service: 未設定環境變數S3_BUCKET_NAME")
 	}
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
@@ -65,12 +65,13 @@ func (m *S3Service) GetFileList() ([]string, error) {
 		return nil, err
 	}
 
-	backupFileList := []string{}
+	fileList := []string{}
 	for _, item := range resp.Contents {
-		backupFileList = append(backupFileList, *item.Key)
+		fileList = append(fileList, *item.Key)
 	}
 
-	return backupFileList, nil
+	log.Printf("S3Service: 成功從S3擷取檔案清單")
+	return fileList, nil
 }
 
 func (m *S3Service) CheckFileIsExist(fileName string) (bool, error) {
@@ -81,7 +82,7 @@ func (m *S3Service) CheckFileIsExist(fileName string) (bool, error) {
 
 	_, err := m.client.HeadObject(context.TODO(), input)
 	if err == nil {
-		log.Printf("S3Manager: 檔案 %s 已存在於S3上", fileName)
+		log.Printf("S3Service: 檔案 %s 已存在於S3上", fileName)
 		return true, nil
 	}
 
@@ -96,7 +97,7 @@ func (m *S3Service) PutFile(fileName string) error {
 	file, err := os.Open(fileName)
 
 	if err != nil {
-		return errors.New(fmt.Sprintf("S3Manager: 開啟本地檔案 %s 時發生錯誤", fileName))
+		return errors.New(fmt.Sprintf("S3Service: 開啟本地檔案 %s 時發生錯誤", fileName))
 	}
 
 	defer file.Close()
@@ -113,5 +114,6 @@ func (m *S3Service) PutFile(fileName string) error {
 		return err
 	}
 
+	log.Printf("S3Service: 檔案 %s 成功儲存至S3", fileName)
 	return nil
 }
