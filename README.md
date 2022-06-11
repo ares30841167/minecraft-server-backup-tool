@@ -5,10 +5,6 @@
 ## Description
 This is a tool that will watch the change of the backup folder of the map. When there has a new backup of the map in the backup folder, this tool upload the backup file to the AWS S3 service.
 
-## Installation
-- Clone this project first
-- Excute `go mod download` command under the root folder of this project
-
 ## Usage
 This tool will fetch settings from environment variable.
 
