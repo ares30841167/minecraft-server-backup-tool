@@ -12,7 +12,7 @@ You need to create a .env file in project root for environment variable settings
 
 The .env file should look like as below:
 ```
-WATCH_PATH=<Fill in the target path>
+BACKUP_FOLDER_PATH=<Fill in the path of the folder where the backup file in>
 BACKUP_FILE_REGEXP=<Fill in the regular expression of the target backup file>
 AWS_REGION=<Fill in the aws region>
 AWS_ACCESS_KEY_ID=<Fill in the aws access key ID>

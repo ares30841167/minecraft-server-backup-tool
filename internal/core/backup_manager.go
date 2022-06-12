@@ -18,8 +18,8 @@ type BackupManager struct {
 }
 
 func NewBackupManager() (*BackupManager, error) {
-	if os.Getenv("WATCH_PATH") == "" {
-		return nil, errors.New("BackupManager: 未設定環境變數WATCH_PATH")
+	if os.Getenv("BACKUP_FOLDER_PATH") == "" {
+		return nil, errors.New("BackupManager: 未設定環境變數BACKUP_FOLDER_PATH")
 	}
 
 	if os.Getenv("BACKUP_FILE_REGEXP") == "" {
@@ -38,13 +38,13 @@ func NewBackupManager() (*BackupManager, error) {
 
 	return &BackupManager{
 		storage:  s3,
-		basePath: os.Getenv("WATCH_PATH"),
+		basePath: os.Getenv("BACKUP_FOLDER_PATH"),
 		regexp:   r,
 	}, nil
 }
 
 func (bw *BackupManager) ScanExistFilesInFolder() error {
-	log.Println("掃描地圖備份資料夾內現有檔案並嘗試上傳...")
+	log.Println("BackupManager: 掃描地圖備份資料夾內現有檔案並嘗試上傳...")
 
 	files, err := ioutil.ReadDir(bw.basePath)
 	if err != nil {
@@ -61,7 +61,7 @@ func (bw *BackupManager) ScanExistFilesInFolder() error {
 		}
 	}
 
-	log.Println("掃描完畢!")
+	log.Println("BackupManager: 掃描完畢!")
 	return nil
 }
 
@@ -70,7 +70,7 @@ func (bw *BackupManager) TryToSaveFile(fileName string) error {
 		return nil
 	}
 
-	log.Println("偵測到新的地圖備份檔:", fileName)
+	log.Println("BackupManager: 開始處理地圖備份檔:", fileName)
 
 	exist, err := bw.storage.CheckFileIsExist(fileName)
 	if err != nil {
@@ -86,6 +86,6 @@ func (bw *BackupManager) TryToSaveFile(fileName string) error {
 		return err
 	}
 
-	log.Printf("地圖備份檔 %s 成功儲存", fileName)
+	log.Printf("BackupManager: 地圖備份檔 %s 成功儲存", fileName)
 	return nil
 }

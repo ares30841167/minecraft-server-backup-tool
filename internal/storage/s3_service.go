@@ -21,8 +21,8 @@ type S3Service struct {
 }
 
 func NewS3Service() (*S3Service, error) {
-	if os.Getenv("WATCH_PATH") == "" {
-		return nil, errors.New("S3Service: 未設定環境變數WATCH_PATH")
+	if os.Getenv("BACKUP_FOLDER_PATH") == "" {
+		return nil, errors.New("S3Service: 未設定環境變數BACKUP_FOLDER_PATH")
 	}
 
 	if os.Getenv("AWS_REGION") == "" {
@@ -51,7 +51,7 @@ func NewS3Service() (*S3Service, error) {
 	return &S3Service{
 		client:   client,
 		bucket:   os.Getenv("S3_BUCKET_NAME"),
-		basePath: os.Getenv("WATCH_PATH"),
+		basePath: os.Getenv("BACKUP_FOLDER_PATH"),
 	}, nil
 }
 

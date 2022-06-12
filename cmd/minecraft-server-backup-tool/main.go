@@ -2,18 +2,13 @@ package main
 
 import (
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
 	_ "github.com/joho/godotenv/autoload"
 	"guanyu.dev/minecraft-server-backup-tool/internal/core"
+	"guanyu.dev/minecraft-server-backup-tool/internal/http"
 )
 
 func main() {
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-
 	bakupManager, err := core.NewBackupManager()
 	if err != nil {
 		log.Fatal(err.Error())
@@ -24,13 +19,14 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	bakupWatcher, err := core.NewBackupWatcher()
+	server, err := http.NewWebhookServer()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	bakupWatcher.StartWatchFile()
+	shutdownProcessed := server.StartInterruptListener()
+	server.Start()
 
-	log.Println("開始監聽地圖備份資料夾")
-	<-sig
+	<-shutdownProcessed
+	defer server.Close()
 }
